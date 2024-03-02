@@ -135,7 +135,7 @@ app.get('/health', async (req, res) => {
 
 });
 
-app.get('/Happy', async (req, res) => {
+app.get('/GetHATable', async (req, res) => {
   try {
     const {PID} = req.body;
   const HAKey = await pool.query('SELECT HAKey FROM patient where PID = $1', [PID]);
@@ -214,11 +214,11 @@ app.post('/AddHAEntry', async (req, res) => {
 
 });
 
-app.get('/HA', async (req, res) => {
+app.get('/HA_levels', async (req, res) => {
   try {
-    const {happiness, date, PID, HAKey} = req.body;
-    await pool.query('INSERT into HA (HAKey, Date, PID, Vals) VALUES ($1, $2, $3, $4)', [HAKey, date, PID, happiness]);
-    return res.status(200).json({ message: 'HappinessTable Updated Successfully', HAKey, date, PID, happiness});
+    const {HAKey} = req.body;
+    const levels = await pool.query('SELECT Vals FROM ha where HAKey = $1', [HAKey]);
+    return res.status(200).json({ message: 'Happiness values successfully retrieved', levels});
   }
   catch(err) {
 

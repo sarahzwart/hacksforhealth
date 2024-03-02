@@ -186,7 +186,7 @@ app.post('/signin/patient', async (req, res) => {
   }
 
   try {
-    const user = await pool.query('SELECT id, username, password FROM patient WHERE username = $1', [username]);
+    const user = await pool.query('SELECT id, username, pass FROM patient WHERE username = $1', [username]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid username or password' });

@@ -151,17 +151,24 @@ app.get('/GetHATable', async (req, res) => {
 
 });
 
-app.get('/Date', async (req, res) => {
+app.get('/haValAtDate', async (req, res) => {
   try {
-    const {PID} = req.body;
-  const HAKey = await pool.query('SELECT HAKey FROM patient where PID = $1', [PID]);
-
-  return result;
+    const {HAKey, date} = req.body;
+    const levels = await pool.query('SELECT Vals FROM ha where HAKey = $1', [HAKey]);
+    const dates = await pool.query('SELECT Date FROM ha where HAKey = $1', [HAKey]);
+    for (let i = 0; i < dates.length; i++) {
+        if (dates[i] == date) {
+          if (levels[i]) {
+            value = levels[i];
+            return res.status(500).json({ message: 'Found happiness level at this date', value});
+          }
+        }
+    }
   }
   catch(err) {
 
     console.error(err);
-    return res.status(500).json({ message: 'Invalid Username or Password' });
+    return res.status(500).json({ message: 'Unable to retrieve happiness values' });
   }
 
 
@@ -223,7 +230,7 @@ app.get('/HA_levels', async (req, res) => {
   catch(err) {
 
     console.error(err);
-    return res.status(500).json({ message: 'Invalid Username or Password' });
+    return res.status(500).json({ message: 'Unable to retrieve happiness values' });
   }
 
 

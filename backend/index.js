@@ -265,3 +265,53 @@ app.post('/UpdateHAEntry', async (req, res) => {
 
 });
 
+app.get('/HA_dates', async (req, res) => {
+  try {
+    const {HAKey} = req.body;
+    const dates = await pool.query('SELECT Date FROM ha where HAKey = $1', [HAKey]);
+    return res.status(200).json({ message: 'Happiness values successfully retrieved', dates});
+  }
+  catch(err) {
+
+    console.error(err);
+    return res.status(500).json({ message: 'Unable to retrieve happiness values' });
+  }
+
+
+});
+
+app.get('/Thearpist_Patients', async (req, res) => {
+  try {
+    const {id} = req.body;
+    const patientIDs = await pool.query('SELECT PatientIDs FROM therapist WHERE id = $1', [id]);
+    return res.status(200).json({ message: 'Patient Numbers successfully retrieved', patientIDs});
+  }
+  catch(err) {
+
+    console.error(err);
+    return res.status(500).json({ message: 'Unable to retrieve patientIDs'});
+  }
+
+
+});
+
+app.get('/PatientByID', async (req, res) => {
+  try {
+    const {PatientID, id} = req.body;
+    const patientIDs = await pool.query('SELECT PatientIDs FROM therapist WHERE id = $1', [id]);
+    for (let i = 0; i < patientIDs.length; i++) {
+        if (patientIDs[i] = PatientID) {
+          const user = await pool.query('SELECT * FROM patient WHERE PatientID = $1', [PatientID]);
+          return res.status(200).json({ message: 'Patient information successfully retrieved', user});
+        }
+    }
+    return res.status(200).json({ message: 'Patient not registered with this therapist', id});
+  }
+  catch(err) {
+
+    console.error(err);
+    return res.status(500).json({ message: 'Unable to retrieve Patient Information'});
+  }
+
+
+});

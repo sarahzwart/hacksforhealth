@@ -46,7 +46,7 @@ app.post('/signup/therapist', async (req, res) => {
 });
 
 
-app.post('/signin/therapist', async (req, res) => {
+app.get('/signin/therapist', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -71,7 +71,7 @@ app.post('/signin/therapist', async (req, res) => {
     //console.log(userName)
     const token = jwt.sign({ username: userName }, jwtSecret, { expiresIn: '2h' });
 
-    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName,bio,groupId });
+    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName });
 
   } catch (err) {
     console.error(err);

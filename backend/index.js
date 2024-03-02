@@ -295,7 +295,7 @@ app.get('/Thearpist_Patients', async (req, res) => {
 
 });
 
-app.get('/PatientByID', async (req, res) => {
+app.get('/patientByID', async (req, res) => {
   try {
     const {PatientID, id} = req.body;
     const patientIDs = await pool.query('SELECT PatientIDs FROM therapist WHERE id = $1', [id]);
@@ -312,6 +312,44 @@ app.get('/PatientByID', async (req, res) => {
     console.error(err);
     return res.status(500).json({ message: 'Unable to retrieve Patient Information'});
   }
-
-
 });
+  app.delete('/patientDelete', async (req, res) => {
+      try {
+      const {PatientID} = req.body;
+      await pool.query('DELETE FROM patient WHERE PatientID = $1', [PatientID])
+      }
+      catch(err) {
+        return res.status(200).json({ message: 'Unable to delete Patient', PatientID});
+      }
+  });
+  app.delete('/therapistDelete', async (req, res) => {
+    try {
+    const {id} = req.body;
+    await pool.query('DELETE FROM therapist WHERE id = $1', [id])
+    }
+    catch(err) {
+      return res.status(200).json({ message: 'Unable to delete therapist', id});
+    }
+});
+app.delete('/haDelete', async (req, res) => {
+  try {
+  const {HAKey} = req.body;
+  await pool.query('DELETE FROM ha WHERE HAKey = $1', [HAKey])
+  }
+  catch(err) {
+    return res.status(200).json({ message: 'Unable to delete happiness data for patient', HAKey});
+  }
+});
+
+app.delete('/haDeleteDate', async (req, res) => {
+  try {
+  const {HAKey, Date} = req.body;
+  await pool.query('DELETE FROM ha WHERE HAKey = $1 AND Date = $2', [HAKey, Date])
+  return res.status(200).json({ message: 'Successfully deleted happiness data for patient', HAKey, Date});
+  }
+  catch(err) {
+    return res.status(200).json({ message: 'Unable to delete happiness data for patient', HAKey, Date});
+  }
+});
+
+

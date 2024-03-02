@@ -80,7 +80,7 @@ app.post('/signin/therapist', async (req, res) => {
   }
 
   try {
-    const user = await pool.query('SELECT * FROM therapist WHERE username = $1', [username]);
+    const user = await pool.query('SELECT id, username, password FROM therapist WHERE username = $1', [username]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid username or password' });
@@ -91,19 +91,24 @@ app.post('/signin/therapist', async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
+
     const userId = user.rows[0].id;
-    const userName= user.rows[0].username;
-    
-    //console.log(userName)
+    const userName = user.rows[0].username;
     const token = jwt.sign({ username: userName }, jwtSecret, { expiresIn: '2h' });
 
-    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName,bio,groupId });
+    return res.status(200).json({ 
+      message: 'User authenticated successfully', 
+      userId, 
+      token, 
+      userName
+    });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error signing in therapist:', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
@@ -182,7 +187,7 @@ app.post('/signin/patient', async (req, res) => {
   }
 
   try {
-    const user = await pool.query('SELECT * FROM patient WHERE username = $1', [username]);
+    const user = await pool.query('SELECT id, username, password FROM patient WHERE username = $1', [username]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid username or password' });
@@ -193,18 +198,18 @@ app.post('/signin/patient', async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
+
     const userId = user.rows[0].id;
-    const userName= user.rows[0].username;
-    
-    //console.log(userName)
+    const userName = user.rows[0].username;
     const token = jwt.sign({ username: userName }, jwtSecret, { expiresIn: '2h' });
-    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName,bio,groupId });
+    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName });
 
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 app.post('/AddHAEntry', async (req, res) => {
   try {

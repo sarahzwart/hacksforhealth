@@ -31,7 +31,7 @@ app.post('/signup/patient', async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const result = await pool.query('INSERT INTO patient (username, password) VALUES ($1, $2) RETURNING username', [username, hashedPassword]);
+    const result = await pool.query('INSERT INTO patient (username, pass) VALUES ($1, $2) RETURNING username', [username, hashedPassword]);
 
     const newUser = result.rows[0].username;
 

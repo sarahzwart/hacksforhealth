@@ -33,7 +33,7 @@ app.post('/signup/therapist', async (req, res) => {
 
     const result = await pool.query('INSERT INTO therapist (username, password) VALUES ($1, $2) ', [username, hashedPassword]);
 
-    //const userId = result.rows[0].username;
+    const userId = result.rows[0].username;
 
     const token = jwt.sign({ username: username }, jwtSecret, { expiresIn: '2h' });
 
@@ -46,7 +46,7 @@ app.post('/signup/therapist', async (req, res) => {
 });
 
 
-app.get('/signin/therapist', async (req, res) => {
+app.post('/signin/therapist', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -71,7 +71,7 @@ app.get('/signin/therapist', async (req, res) => {
     //console.log(userName)
     const token = jwt.sign({ username: userName }, jwtSecret, { expiresIn: '2h' });
 
-    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName });
+    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName,bio,groupId });
 
   } catch (err) {
     console.error(err);
@@ -112,7 +112,7 @@ app.get('/health', async (req, res) => {
 app.get('/Happy', async (req, res) => {
   try {
     const {PID} = req.body;
-  const result = await pool.query('SELECT (HAKey) FROM ($1)', [PID]);
+  const HAKey = await pool.query('SELECT HAKey FROM patient where PID = $1', [PID]);
 
   return result;
   }
@@ -133,7 +133,7 @@ app.post('/signin/patient', async (req, res) => {
   }
 
   try {
-    const user = await pool.query('SELECT * FROM therapist WHERE username = $1', [username]);
+    const user = await pool.query('SELECT * FROM patient WHERE username = $1', [username]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid username or password' });
@@ -149,11 +149,26 @@ app.post('/signin/patient', async (req, res) => {
     
     //console.log(userName)
     const token = jwt.sign({ username: userName }, jwtSecret, { expiresIn: '2h' });
-
     return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName,bio,groupId });
 
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
+});
+
+app.post('/UpdateHA', async (req, res) => {
+  try {
+    const {happiness, date, PID} = req.body;
+    const HAKey = await pool.query('SELECT HAKey FROM pateint WHERE PID = $1', [PID]);
+    await pool.query('INSERT into HA (HAKey, Date, PID, Vals) VALUES ($1, $2, $3, $4)', [HAKey, date, PID, happiness]);
+    return res.status(200).json({ message: 'HappinessTable Updated Successfully', HAKey, date, PID, happiness});
+  }
+  catch(err) {
+
+    console.error(err);
+    return res.status(500).json({ message: 'Invalid Username or Password' });
+  }
+
+
 });

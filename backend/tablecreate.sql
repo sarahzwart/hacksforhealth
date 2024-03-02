@@ -22,3 +22,9 @@ CREATE TABLE ha (
 
 ALTER TABLE patient
 ADD CONSTRAINT constrain1 FOREIGN KEY (HAKey) REFERENCES ha(HA_ID)
+
+INSERT INTO therapist (id, username, password, PatientIDs) VALUES (94028, 'Steve', 'Jobs', ARRAY[382, 5]);
+
+INSERT INTO patient (PID, TherapistID, username, Pass, HAKey) VALUES (382, 94028, 'Hello', 'Hi', 4839);
+
+INSERT INTO ha (HA_ID, PatientID, Vals, Date) VALUES (4839, 382, ARRAY[5, 4, 3], ARRAY['1994-10-27'::date, '1994-10-28'::date, '1994-10-29'::date])

@@ -22,28 +22,28 @@ app.use(express.json())
 app.post('/signup/patient', async (req, res) => {
   const { username, password } = req.body;
   
-
   if (!username || !password ) {
-    return res.status(400).json({ message: 'Username, password, and group id are required' });
+    return res.status(400).json({ message: 'Username and password are required' });
   }
 
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const result = await pool.query('INSERT INTO patient (username, password) VALUES ($1, $2) ', [username, hashedPassword]);
+    const result = await pool.query('INSERT INTO patient (username, password) VALUES ($1, $2) RETURNING username', [username, hashedPassword]);
 
-    const userId = result.rows[0].username;
+    const newUser = result.rows[0].username;
 
-    const token = jwt.sign({ username: username }, jwtSecret, { expiresIn: '2h' });
+    const token = jwt.sign({ username: newUser }, jwtSecret, { expiresIn: '2h' });
 
-    return res.status(201).json({ message: 'User created successfully', username, token });
+    return res.status(201).json({ message: 'User created successfully', username: newUser, token });
 
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 app.post('/signup/therapist', async (req, res) => {
   const { username, password } = req.body;

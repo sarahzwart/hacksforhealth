@@ -1,0 +1,21 @@
+CREATE TABLE therapist (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE patient (
+    PID INT PRIMARY KEY NOT NULL,
+    TherapistID INT REFERENCES therapist(id) KEY NOT NULL,
+    Pass VARCHAR(255) NOT NULL,
+    Username VARCHAR(255) NOT NULL UNIQUE,
+    HAKey INT REFERENCES HA(HA_ID) NOT NULL
+);
+
+CREATE TABLE ha (
+    HA_ID INT PRIMARY KEY NOT NULL,
+    PID INT REFERNECES patient(PID) NOT NULL,
+    Vals INT[],
+    Date DATE[]
+);
+

@@ -33,7 +33,7 @@ app.post('/signup/therapist', async (req, res) => {
 
     const result = await pool.query('INSERT INTO therapist (username, password) VALUES ($1, $2) ', [username, hashedPassword]);
 
-    const userId = result.rows[0].username;
+    //const userId = result.rows[0].username;
 
     const token = jwt.sign({ username: username }, jwtSecret, { expiresIn: '2h' });
 

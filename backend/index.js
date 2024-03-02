@@ -215,7 +215,7 @@ app.post('/AddHAEntry', async (req, res) => {
   catch(err) {
 
     console.error(err);
-    return res.status(500).json({ message: 'Invalid Username or Password' });
+    return res.status(500).json({ message: 'Failed to add happiness entry' });
   }
 
 

@@ -145,9 +145,9 @@ app.get('/health', async (req, res) => {
 app.get('/GetHATable', async (req, res) => {
   try {
     const {PID} = req.body;
-  const HAKey = await pool.query('SELECT HAKey FROM patient where PID = $1', [PID]);
+  const hakey = await pool.query('SELECT hakey FROM patient where PID = $1', [PID]);
 
-  return HAKey;
+  return hakey;
   }
   catch(err) {
 
@@ -158,11 +158,11 @@ app.get('/GetHATable', async (req, res) => {
 
 });
 
-app.get('/haValAtDate', async (req, res) => {
+app.get('/haValAtdate', async (req, res) => {
   try {
-    const { HAKey, date } = req.body;
+    const { hakey, date } = req.body;
 
-    const result = await pool.query('SELECT Vals FROM ha WHERE HAKey = $1 AND Date = $2', [HAKey, date]);
+    const result = await pool.query('SELECT Vals FROM ha WHERE hakey = $1 AND date = $2', [hakey, date]);
 
     // Check if any result is found
     if (result.rows.length > 0) {
@@ -212,9 +212,9 @@ app.post('/signin/patient', async (req, res) => {
 
 app.post('/AddHAEntry', async (req, res) => {
   try {
-    const {happiness, date, PatientID, HAKey} = req.body;
-    await pool.query('INSERT into HA (HAKey, Date, PatientID, Vals) VALUES ($1, $2, $3, $4)', [HAKey, date, PatientID, happiness]);
-    return res.status(200).json({ message: 'HappinessTable Updated Successfully', HAKey, date, PatientID, happiness});
+    const {happiness, date, PatientID, hakey} = req.body;
+    await pool.query('INSERT into HA (hakey, date, patientids, vals) VALUES ($1, $2, $3, $4)', [hakey, date, PatientID, happiness]);
+    return res.status(200).json({ message: 'HappinessTable Updated Successfully', hakey, date, PatientID, happiness});
   }
   catch(err) {
 
@@ -227,8 +227,8 @@ app.post('/AddHAEntry', async (req, res) => {
 
 app.get('/HA_levels', async (req, res) => {
   try {
-    const {HAKey} = req.body;
-    const levels = await pool.query('SELECT Vals FROM ha where HAKey = $1', [HAKey]);
+    const {hakey} = req.body;
+    const levels = await pool.query('SELECT vals FROM ha where hakey = $1', [hakey]);
     return res.status(200).json({ message: 'Happiness values successfully retrieved', levels});
   }
   catch(err) {
@@ -242,9 +242,9 @@ app.get('/HA_levels', async (req, res) => {
 
 app.post('/UpdateHAEntry', async (req, res) => {
   try {
-    const {happiness, date, PatientID, HAKey} = req.body;
-    const dates = await pool.query('SELECT Date FROM ha where HAKey = $1', [HAKey]);
-    const levels = await pool.query('SELECT Vals FROM ha where HAKey = $1', [HAKey]);
+    const {happiness, date, PatientID, hakey} = req.body;
+    const dates = await pool.query('SELECT date FROM ha where hakey = $1', [hakey]);
+    const levels = await pool.query('SELECT vals FROM ha where hakey = $1', [hakey]);
     const value = -1;
     for (let i = 0; i < dates.length; i++) {
       if (dates[i] == date) {
@@ -257,8 +257,8 @@ app.post('/UpdateHAEntry', async (req, res) => {
   if (value == -1) {
     return res.status(500).json({ message: 'Failed to add happiness entry' });
   }
-    await pool.query('UPDATE ha SET Vals = $1 WHERE HAKey = $2', [levels, HAKey]);
-    return res.status(200).json({ message: 'HappinessTable Updated Successfully', HAKey, date, PatientID, happiness});
+    await pool.query('UPdate ha SET vals = $1 WHERE hakey = $2', [levels, hakey]);
+    return res.status(200).json({ message: 'HappinessTable Updated Successfully', hakey, date, PatientID, happiness});
   }
   catch(err) {
 
@@ -271,8 +271,8 @@ app.post('/UpdateHAEntry', async (req, res) => {
 
 app.get('/HA_dates', async (req, res) => {
   try {
-    const {HAKey} = req.body;
-    const dates = await pool.query('SELECT Date FROM ha where HAKey = $1', [HAKey]);
+    const {hakey} = req.body;
+    const dates = await pool.query('SELECT date FROM ha where hakey = $1', [hakey]);
     return res.status(200).json({ message: 'Happiness values successfully retrieved', dates});
   }
   catch(err) {
@@ -287,13 +287,13 @@ app.get('/HA_dates', async (req, res) => {
 app.get('/Thearpist_Patients', async (req, res) => {
   try {
     const {id} = req.body;
-    const patientIDs = await pool.query('SELECT PatientIDs FROM therapist WHERE id = $1', [id]);
+    const patientIDs = await pool.query('SELECT patientids FROM therapist WHERE id = $1', [id]);
     return res.status(200).json({ message: 'Patient Numbers successfully retrieved', patientIDs});
   }
   catch(err) {
 
     console.error(err);
-    return res.status(500).json({ message: 'Unable to retrieve patientIDs'});
+    return res.status(500).json({ message: 'Unable to retrieve patientids'});
   }
 
 
@@ -302,13 +302,13 @@ app.get('/Thearpist_Patients', async (req, res) => {
 app.get('/patientByID', async (req, res) => {
   try {
     const { PatientID, id } = req.body;
-    const patientIDs = await pool.query('SELECT PatientIDs FROM therapist WHERE id = $1', [id]);
+    const patientIDs = await pool.query('SELECT patientids FROM therapist WHERE id = $1', [id]);
 
     // Use patientIDs.rows.length instead of patientIDs.length
     for (let i = 0; i < patientIDs.rows.length; i++) {
       // Use === for comparison
       if (patientIDs.rows[i].PatientIDs === PatientID) {
-        const user = await pool.query('SELECT * FROM patient WHERE PatientID = $1', [PatientID]);
+        const user = await pool.query('SELECT * FROM patient WHERE patientid = $1', [PatientID]);
         return res.status(200).json({ message: 'Patient information successfully retrieved', user });
       }
     }
@@ -322,7 +322,7 @@ app.get('/patientByID', async (req, res) => {
   app.delete('/patientDelete', async (req, res) => {
       try {
       const {PatientID} = req.body;
-      await pool.query('DELETE FROM patient WHERE PatientID = $1', [PatientID]);
+      await pool.query('DELETE FROM patient WHERE patientid = $1', [PatientID]);
       return res.status(200).json({ message: 'Successfully deleted Patient', PatientID});
       }
       catch(err) {
@@ -341,23 +341,23 @@ app.get('/patientByID', async (req, res) => {
 });
 app.delete('/haDelete', async (req, res) => {
   try {
-  const {HAKey} = req.body;
-  await pool.query('DELETE FROM ha WHERE HAKey = $1', [HAKey]);
-  return res.status(200).json({ message: 'Succcessfully deleted happiness data for patient', HAKey});
+  const {hakey} = req.body;
+  await pool.query('DELETE FROM ha WHERE hakey = $1', [hakey]);
+  return res.status(200).json({ message: 'Succcessfully deleted happiness data for patient', hakey});
   }
   catch(err) {
-    return res.status(200).json({ message: 'Unable to delete happiness data for patient', HAKey});
+    return res.status(200).json({ message: 'Unable to delete happiness data for patient', hakey});
   }
 });
 
-app.delete('/haDeleteDate', async (req, res) => {
+app.delete('/haDeletedate', async (req, res) => {
   try {
-  const {HAKey, Date} = req.body;
-  await pool.query('DELETE FROM ha WHERE HAKey = $1 AND Date = $2', [HAKey, Date]);
-  return res.status(200).json({ message: 'Successfully deleted happiness datae entry for patient', HAKey, Date});
+  const {hakey, date} = req.body;
+  await pool.query('DELETE FROM ha WHERE hakey = $1 AND date = $2', [hakey, date]);
+  return res.status(200).json({ message: 'Successfully deleted happiness datae entry for patient', hakey, date});
   }
   catch(err) {
-    return res.status(200).json({ message: 'Unable to delete happiness data entry for patient', HAKey, Date});
+    return res.status(200).json({ message: 'Unable to delete happiness data entry for patient', hakey, date});
   }
 });
 

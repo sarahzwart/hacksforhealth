@@ -235,3 +235,33 @@ app.get('/HA_levels', async (req, res) => {
 
 
 });
+
+app.post('/UpdateHAEntry', async (req, res) => {
+  try {
+    const {happiness, date, PID, HAKey} = req.body;
+    const dates = await pool.query('SELECT Date FROM ha where HAKey = $1', [HAKey]);
+    const levels = await pool.query('SELECT Vals FROM ha where HAKey = $1', [HAKey]);
+    const value = -1;
+    for (let i = 0; i < dates.length; i++) {
+      if (dates[i] == date) {
+        if (levels[i]) {
+          value = i;
+          levels[i] = happiness;
+        }
+      }
+  }
+  if (value == -1) {
+    return res.status(500).json({ message: 'Failed to add happiness entry' });
+  }
+    await pool.query('UPDATE ha SET Vals = $1 WHERE HAKey = $2', [levels, HAKey]);
+    return res.status(200).json({ message: 'HappinessTable Updated Successfully', HAKey, date, PID, happiness});
+  }
+  catch(err) {
+
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to add happiness entry, Server Error' });
+  }
+
+
+});
+

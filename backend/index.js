@@ -17,11 +17,9 @@ app.use(express.json())
 
 //PATIENT
 
-app.post('/signup', async (req, res) => {
+app.post('/signup/therapist', async (req, res) => {
   const { username, password } = req.body;
-  //console.log(req.body);
-  //console.log(password);
-  //console.log(groupId);
+  
 
   if (!username || !password || !groupId) {
     return res.status(400).json({ message: 'Username, password, and group id are required' });
@@ -31,13 +29,47 @@ app.post('/signup', async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const result = await pool.query('INSERT INTO therapist (username, password) VALUES ($1, $2, ', [username, hashedPassword]);
+    const result = await pool.query('INSERT INTO therapist (username, password) VALUES ($1, $2) ', [username, hashedPassword]);
 
-    const userId = result.rows[0].id;
+    const userId = result.rows[0].username;
 
-    const token = jwt.sign({ id: userId ,group_id: groupId}, jwtSecret, { expiresIn: '2h' });
+    const token = jwt.sign({ username: username }, jwtSecret, { expiresIn: '2h' });
 
-    return res.status(201).json({ message: 'User created successfully', userId, groupId, token });
+    return res.status(201).json({ message: 'User created successfully', username, token });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+app.post('/signin/therapist', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
+  }
+
+  try {
+    const user = await pool.query('SELECT * FROM therapist WHERE username = $1', [username]);
+
+    if (user.rows.length === 0) {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.rows[0].password);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+    const userId = user.rows[0].id;
+    const userName= user.rows[0].username;
+    
+    //console.log(userName)
+    const token = jwt.sign({ username: userName }, jwtSecret, { expiresIn: '2h' });
+
+    return res.status(200).json({ message: 'User authenticated successfully', userId, token, userName,bio,groupId });
 
   } catch (err) {
     console.error(err);
@@ -58,6 +90,6 @@ const jwtSecret = process.env.JWT_SECRET_KEY
 
 
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Example app listening at http://localhost:${PORT}`);
 });

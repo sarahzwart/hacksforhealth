@@ -10,6 +10,7 @@ const PORT=process.env.PORT ||5000;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const http = require('http');
+const jwtSecret = process.env.JWT_SECRET_KEY;
 require("dotenv").config();
 
 app.use(cors());
@@ -117,7 +118,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const jwtSecret = process.env.JWT_SECRET_KEY  
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening at http://localhost:${PORT}`);
@@ -125,20 +126,21 @@ app.listen(PORT, () => {
 
 app.get('/health', async (req, res) => {
   try {
-  const { username, hashedPassword } = req.body;
-  const result = await pool.query('SELECT (username, password) FROM ($1, $2)', [username, hashedPassword]);
+    // Incorrect parameters in the query
+    const result = await pool.query('SELECT * FROM some_table LIMIT 1');
 
-  const userId = result.rows[0].id;
-  return userId;
-  }
-  catch(err) {
-
+    // Handling result.rows to check database health
+    if (result.rows.length > 0) {
+      return res.status(200).json({ message: 'Server is healthy' });
+    } else {
+      return res.status(500).json({ message: 'Database is not responding' });
+    }
+  } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Invalid Username or Password' });
+    return res.status(500).json({ message: 'Internal server error' });
   }
-
-
 });
+
 
 app.get('/GetHATable', async (req, res) => {
   try {
@@ -158,26 +160,23 @@ app.get('/GetHATable', async (req, res) => {
 
 app.get('/haValAtDate', async (req, res) => {
   try {
-    const {HAKey, date} = req.body;
-    const levels = await pool.query('SELECT Vals FROM ha where HAKey = $1', [HAKey]);
-    const dates = await pool.query('SELECT Date FROM ha where HAKey = $1', [HAKey]);
-    for (let i = 0; i < dates.length; i++) {
-        if (dates[i] == date) {
-          if (levels[i]) {
-            value = levels[i];
-            return res.status(500).json({ message: 'Found happiness level at this date', value});
-          }
-        }
+    const { HAKey, date } = req.body;
+
+    const result = await pool.query('SELECT Vals FROM ha WHERE HAKey = $1 AND Date = $2', [HAKey, date]);
+
+    // Check if any result is found
+    if (result.rows.length > 0) {
+      const value = result.rows[0].Vals;
+      return res.status(200).json({ message: 'Found happiness level at this date', value });
+    } else {
+      return res.status(404).json({ message: 'Happiness level not found at this date' });
     }
-  }
-  catch(err) {
-
+  } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Unable to retrieve happiness values' });
+    return res.status(500).json({ message: 'Internal server error' });
   }
-
-
 });
+
 
 app.post('/signin/patient', async (req, res) => {
   const { username, password } = req.body;
@@ -302,22 +301,24 @@ app.get('/Thearpist_Patients', async (req, res) => {
 
 app.get('/patientByID', async (req, res) => {
   try {
-    const {PatientID, id} = req.body;
+    const { PatientID, id } = req.body;
     const patientIDs = await pool.query('SELECT PatientIDs FROM therapist WHERE id = $1', [id]);
-    for (let i = 0; i < patientIDs.length; i++) {
-        if (patientIDs[i] = PatientID) {
-          const user = await pool.query('SELECT * FROM patient WHERE PatientID = $1', [PatientID]);
-          return res.status(200).json({ message: 'Patient information successfully retrieved', user});
-        }
-    }
-    return res.status(200).json({ message: 'Patient not registered with this therapist', id});
-  }
-  catch(err) {
 
+    // Use patientIDs.rows.length instead of patientIDs.length
+    for (let i = 0; i < patientIDs.rows.length; i++) {
+      // Use === for comparison
+      if (patientIDs.rows[i].PatientIDs === PatientID) {
+        const user = await pool.query('SELECT * FROM patient WHERE PatientID = $1', [PatientID]);
+        return res.status(200).json({ message: 'Patient information successfully retrieved', user });
+      }
+    }
+    return res.status(404).json({ message: 'Patient not registered with this therapist', id });
+  } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Unable to retrieve Patient Information'});
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
   app.delete('/patientDelete', async (req, res) => {
       try {
       const {PatientID} = req.body;

@@ -3,3 +3,20 @@ CREATE TABLE therapist (
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE patient (
+    id SERIAL PRIMARY KEY,
+    therapist_id INTEGER NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (therapist_id) REFERENCES therapist(id) ON DELETE CASCADE
+);
+
+CREATE TABLE HA (
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL,
+    happiness INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (patient_id) REFERENCES patient(id) ON DELETE CASCADE
+);

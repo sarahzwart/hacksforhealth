@@ -55,3 +55,15 @@ INSERT INTO HA (patient_id, happiness, created_at) VALUES
 -- Add more rows as needed
 (1, ROUND((RANDOM() * 4) + 1), '2024-03-02'),
 (1, ROUND((RANDOM() * 4) + 1), '2024-03-03');
+
+DO $$
+DECLARE
+  current_date DATE := '2024-01-01'; -- Start from January 1, 2024
+BEGIN
+  WHILE current_date <= '2024-02-29' LOOP -- Go through February 29, 2024
+    INSERT INTO HA(patient_id, happiness, created_at)
+    VALUES (1, ROUND((RANDOM() * 4) + 1)::INTEGER, current_date);
+    
+    current_date := current_date + INTERVAL '1 day'; -- Move to the next day
+  END LOOP;
+END $$;

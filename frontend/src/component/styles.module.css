@@ -1,0 +1,111 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.screen {
+    @apply w-full min-h-[1000px] relative bg-gray-200 flex flex-col items-center p-5;
+}
+
+.logo_pos {
+    @apply w-44 relative;
+}
+
+.logo {
+    @apply w-full h-full object-cover;
+}
+
+.signup_box {
+    @apply min-w-[400px] min-h-[485px] mt-5 relative bg-gray-100 border border-neutral-300 rounded-lg shadow-sm flex flex-col items-center;
+}
+
+.signup_text {
+    @apply text-3xl relative my-5 text-cya font-semibold;
+}
+
+.input_contain {
+    @apply w-full h-full relative flex flex-col items-center;
+}
+
+.enter {
+    @apply w-4/5 h-10 mb-3 bg-white text-black border border-gray-300 resize-none rounded-lg px-3 py-1.5;
+}
+
+.bio {
+    @apply w-4/5 h-28 px-3 py-2 border border-gray-300 rounded-lg resize-none focus:border-transparent bg-white text-black;
+}
+
+.upload_text {
+    @apply mt-3 hover:underline;
+}
+
+.image_pos{
+    @apply m-3 flex justify-center items-center w-[200px] h-[200px] rounded-full overflow-hidden bg-gray-300 border border-gray-500;
+}
+
+.image {
+    @apply object-cover w-full h-full rounded-full;
+}
+
+.signup_btn_pos {
+    @apply w-4/5 h-12 relative flex;
+}
+
+.signup_btn {
+    @apply w-full h-full bg-cya hover:bg-yellow-300 hover:text-black text-2xl text-white font-bold rounded-lg shadow-sm focus:outline-none flex justify-center items-center;
+}
+
+.acct_btn_pos {
+    @apply relative m-3 flex;
+}
+
+.acct_btn {
+    @apply text-oran font-bold hover:text-brn hover:underline focus:outline-none flex justify-center items-center;
+}
+
+.error_msg {
+	width: 300px;
+	padding: 15px;
+	margin: 5px 0;
+	font-size: 14px;
+	background-color: #f34646;
+	color: white;
+	border-radius: 5px;
+	text-align: center;
+}
+
+
+.login_box {
+    @apply min-w-[400px] min-h-[400px] mt-5 relative bg-gray-100 border border-neutral-300 rounded-lg shadow-sm flex flex-col items-center;
+}
+
+.login_text {
+    @apply text-3xl relative top-5 text-cya font-semibold;
+}
+
+.input_contain {
+    @apply w-full min-h-[300px] relative mt-10 flex flex-col items-center;
+}
+
+.input {
+    @apply w-4/5 h-12 mb-3 bg-white text-black border border-gray-300 resize-none rounded-lg px-4 py-2.5;
+}
+
+.login_btn_pos {
+    @apply w-4/5 h-12 relative mt-5 flex;
+}
+
+.login_btn {
+    @apply w-full h-full bg-cya hover:bg-yel hover:text-black text-2xl text-white font-bold rounded-lg shadow-sm focus:outline-none flex justify-center items-center;
+}
+
+.or {
+    @apply text-2xl relative mt-5 text-black font-semibold;
+}
+
+.acct_btn_pos {
+    @apply w-2/4 h-12 relative m-3 flex;
+}
+
+.acct_btn {
+    @apply w-full h-full bg-oran hover:bg-brn hover:text-black text-white font-bold rounded-lg shadow-sm focus:outline-none flex justify-center items-center;
+}

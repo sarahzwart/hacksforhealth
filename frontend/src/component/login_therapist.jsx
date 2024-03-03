@@ -15,7 +15,7 @@ const Login_therapist = () => {
 	  e.preventDefault();
 	  try {
       console.log(data)
-		const url = `${import.meta.env.VITE_APP_API_URL}/signin/therapist`;
+		const url = `${import.meta.env.VITE_APP_API_URL}/signin/patient`;
 		const { data: res } = await axios.post(url, data);
 		console.log(res)
 		if (res.status === 401) {
@@ -23,10 +23,9 @@ const Login_therapist = () => {
 		} else {
 		  localStorage.setItem("token", res.token);
 		  localStorage.setItem("name", res.userName);
-      localStorage.setItem("userID", res.userId);
       
       //localStorage.setItem('imageUrl', res.imageUrl);
-		  window.location = "/therapist";
+		  window.location = "/patient";
 		}
 	  } catch (error) {
 		if (
@@ -77,7 +76,7 @@ const Login_therapist = () => {
             </button>
             <div className={styles.or}>or</div>
             <button className={styles.acct_btn_pos}>
-              <a className={styles.acct_btn} href="/signup">Create new account</a>
+              <a className={styles.acct_btn} href="/patient/signup">Create new account</a>
             </button>
           </form>
          

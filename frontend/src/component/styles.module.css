@@ -109,3 +109,10 @@
 .acct_btn {
     @apply w-full h-full bg-oran hover:bg-brn hover:text-black text-white font-bold rounded-lg shadow-sm focus:outline-none flex justify-center items-center;
 }
+
+.happinessLevel1 { background-color: red !important; }
+.happinessLevel2 { background-color: orange !important; }
+.happinessLevel3 { background-color: yellow !important; }
+.happinessLevel4 { background-color: lightgreen !important; }
+.happinessLevel5 { background-color: green !important; }
+.happinessNA { background-color: grey !important; }

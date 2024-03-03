@@ -23,17 +23,6 @@ function CalendarDisplay() {
     }
   };
 
-  const handlePage = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/", {});
-      console.log(response.data);
-      // Handle successful response here
-    } catch (error) {
-      console.error("An error occurred:", error);
-      // Optionally, you can handle errors here or leave it empty
-    }
-  };
-
   const handleTileClick = (date: Date) => {
     if (date <= new Date()) {
       setSelectedDate(date);
@@ -100,7 +89,6 @@ function CalendarDisplay() {
 
   return (
     <div>
-      <button onClick={handlePage}>button</button>
       <select
         value={mood[selectedDate.toISOString().slice(0, 10)] || ""}
         onChange={handleMoodChange}>

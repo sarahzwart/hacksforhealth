@@ -4,8 +4,8 @@ import Calendar from "./CalendarDisplay";
 function Patient() {
   return (
     
-    <div>
-      <h1>Patient Page</h1>
+    <div style ={{color:"black", backgroundColor: "lightcyan"}}>
+      <h1 style ={{color:"black"}}>Patient Page</h1>
       <Calendar />
     </div>
   );

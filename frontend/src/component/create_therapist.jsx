@@ -67,7 +67,7 @@ const Create_therapist = () => {
         </div> 
 
         <div className={styles.signup_box}>
-          <div className={styles.signup_text}>Create therapist</div>
+          <div className={styles.signup_text}>Create life</div>
           <div className={styles.input_contain}>
             
             <input
@@ -100,7 +100,7 @@ const Create_therapist = () => {
           </div>
 
           <button className={styles.acct_btn_pos}>
-            <a className={styles.acct_btn} href="/Start">Go Back?</a>
+            <a className={styles.acct_btn} href="/patient/login">Go Back?</a>
           </button>
         </div>
         

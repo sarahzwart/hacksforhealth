@@ -149,76 +149,81 @@ const Therapist = () => {
   };
 
 
-  const HappinessChart = ({ labels, data }) => {
-    const chartOptions = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        title: {
-          display: true,
-          text: 'Happiness Over Time',
-        },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          suggestedMax: 5, // Assuming happiness levels range from 1 to 5
-        },
-      },
-    };
-  
-    const chartData = {
-      labels,
-      datasets: [
-        {
-          label: 'Happiness Level',
-          data,
-          fill: false,
-          backgroundColor: 'rgb(75, 192, 192)',
-          borderColor: 'rgba(75, 192, 192, 0.2)',
-          tension: 0.1,
-        },
-      ],
-    };
-  
-    return <Line options={chartOptions} data={chartData} />;
+  const [activeMonth, setActiveMonth] = useState(new Date());
+  const [monthlyAverageHappiness, setMonthlyAverageHappiness] = useState(null);
+  const [tips, setTips] = useState('');
+
+  // Function to calculate average happiness for a month
+  const calculateMonthlyAverage = (date) => {
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    const monthlyRecords = happinessRecords.filter(record => {
+      const recordDate = new Date(record.created_at);
+      return recordDate >= monthStart && recordDate <= monthEnd;
+    });
+
+    const average = monthlyRecords.reduce((acc, record) => acc + record.happiness, 0) / monthlyRecords.length || 0;
+    setMonthlyAverageHappiness(Math.round(average));
   };
 
+  useEffect(() => {
+    if (monthlyAverageHappiness !== null) {
+      if (monthlyAverageHappiness < 2) {
+        setTips("Tip for low happiness: Try mindfulness or meditation.\n Consider starting a gratitude journal to focus on positive aspects. ");
+      } else if (monthlyAverageHappiness <= 3) {
+        setTips('Tip for average happiness: Regular exercise can boost your mood.');
+      } else {
+        setTips('Tip for high happiness: Keep doing what you’re doing and share your positivity!');
+      }
+    }
+  }, [monthlyAverageHappiness]);
+
   return (
-    <div className="relative h-screen bg-blue-100">
-      <h1 className="text-center text-4xl pt-10">Therapist Dashboard</h1>
+<div className="relative h-screen bg-blue-100 flex flex-col items-center"> {/* Add flex-column here if not present */}
+  <div className="absolute top-0 right-0 p-5">
+    <button onClick={handleLogout} className="logout-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+      Logout
+    </button>
+  </div>
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        contentLabel="How are you feeling today?"
-        className="absolute top-1/4 left-1/4 right-1/4 bottom-1/4 bg-white rounded p-5"
-      >
-        <h2 className="text-xl mb-4">How are you feeling today?</h2>
-        <div className="flex justify-around">
-          {moodRatings.map((mood) => (
-            <button key={mood.value} onClick={() => handleMoodSubmit(mood.value)} className="text-4xl">
-              {mood.emoji}
-            </button>
-          ))}
-        </div>
-      </Modal>
+  <h1 className="text-center text-4xl pt-10">Dashboard</h1>
 
-      <div className="mt-10">
-      <Calendar
-  tileClassName={getTileClassName}
-/>
+  <Modal
+    isOpen={modalIsOpen}
+    onRequestClose={() => setModalIsOpen(false)}
+    contentLabel="How are you feeling today?"
+    className="absolute top-1/4 left-1/4 right-1/4 bottom-1/4 bg-white rounded p-5"
+  >
+    <h2 className="text-xl mb-4">How are you feeling today?</h2>
+    <div className="flex justify-around">
+      {moodRatings.map((mood) => (
+        <button key={mood.value} onClick={() => handleMoodSubmit(mood.value)} className="text-4xl">
+          {mood.emoji}
+        </button>
+      ))}
+    </div>
+  </Modal>
+
+  <div className="flex justify-center w-full mt-10">
+    <Calendar 
+    tileClassName={getTileClassName}
+
+    onActiveStartDateChange={({ activeStartDate }) => {
+      setActiveMonth(activeStartDate);
+      calculateMonthlyAverage(activeStartDate);
+    }}
+    value={activeMonth}
+ />
+
+  </div>
+
+  <div className="mt-5 bg-white p-4 rounded shadow-lg max-w-xl mx-auto">
+<h3 className="text-lg font-semibold mb-2">Mental Health Tips:</h3>
+
+          {tips && <p>{tips}</p>}
       </div>
-      <div>
-      <h1>Therapist Dashboard</h1>
-      <button onClick={handleLogout} className="logout-button">Logout</button>
-    </div>
-
-    
-
-    </div>
+</div>
   );
 };
 
